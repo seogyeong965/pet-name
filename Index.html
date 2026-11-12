@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멍냥 작명소 - 반려동물 맞춤 이름 추천</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8FAFC;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-amber-500 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center text-2xl shadow-inner">
+                    🐶
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight">멍냥 작명소</h1>
+                    <p class="text-[11px] text-amber-100 font-medium">반려동물학과 보건·행동학 기반 맞춤 작명기</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="switchTab('generator')" id="navGen" class="px-3 py-1.5 bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm">
+                    ✨ 작명하기
+                </button>
+                <button onclick="switchTab('bookmarks')" id="navBook" class="px-3 py-1.5 bg-amber-400/50 hover:bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition">
+                    ❤️ 찜한 이름 (<span id="bookmarkCount">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+
+        <!-- Banner Info for Pet Science Dept -->
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start space-x-3 shadow-sm">
+            <div class="p-2 bg-amber-100 rounded-xl text-amber-600 text-lg">
+                💡
+            </div>
+            <div class="text-xs sm:text-sm text-amber-900 leading-relaxed">
+                <span class="font-bold block text-amber-950 mb-0.5">반려동물 행동학 팁!</span>
+                강아지는 <strong>'모음(ㅏ, ㅓ)'이 명확하고 2글자</strong>로 된 이름을 가장 빠르게 인지합니다. 파열음(ㅃ, ㄸ, ㄲ 등)이나 센소리(ㅊ, ㅋ, ㅌ, ㅍ)가 들어가면 집중력이 높아집니다.
+            </div>
+        </div>
+
+        <!-- SECTION 1: Generator Tab -->
+        <div id="tabGenerator" class="space-y-6">
+            <!-- Form Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-amber-500"></i>
+                    <span>우리 아이 프로필 설정</span>
+                </h2>
+
+                <form id="namingForm" onsubmit="generateNames(event)" class="space-y-4">
+                    <!-- Pet Type & Gender -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">반려동물 종류</label>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold bg-amber-50 border-amber-400 text-amber-900 flex items-center justify-center space-x-1.5">
+                                    <input type="radio" name="petType" value="dog" checked class="hidden" onchange="updateRadioStyles(this)">
+                                    <span>🐶 강아지</span>
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center space-x-1.5">
+                                    <input type="radio" name="petType" value="cat" class="hidden" onchange="updateRadioStyles(this)">
+                                    <span>🐱 고양이</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">성별</label>
+                            <div class="grid grid-cols-3 gap-2 text-xs">
+                                <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold bg-amber-50 border-amber-400 text-amber-900 flex items-center justify-center">
+                                    <input type="radio" name="gender" value="male" checked class="hidden" onchange="updateRadioStyles(this)">
+                                    <span>남아 ♂</span>
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center">
+                                    <input type="radio" name="gender" value="female" class="hidden" onchange="updateRadioStyles(this)">
+                                    <span>여아 ♀</span>
+                                </label>
+                                <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center">
+                                    <input type="radio" name="gender" value="neutral" class="hidden" onchange="updateRadioStyles(this)">
+                                    <span>무관</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coat Color & Personality -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">털 색상 / 외모 특징</label>
+                            <select id="coatColor" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                                <option value="brown">하양/크림색 (인절미, 우유 등)</option>
+                                <option value="black">검정/갈색 (초코, 흑임자 등)</option>
+                                <option value="gold">황색/골드 (보리, 치즈 등)</option>
+                                <option value="gray">회색/실버 (구름, 먼지 등)</option>
+                                <option value="spotted">점박이/삼색/믹스 (바둑, 얼룩 등)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">성격 / 성향</label>
+                            <select id="personality" class="w-full text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                                <option value="energetic">에너지 넘치고 활발함 ⚡</option>
+                                <option value="calm">조용하고 차분하며 얌전함 🌙</option>
+                                <option value="cute">애교 많고 어리광쟁이 💕</option>
+                                <option value="smart">똑똑하고 호기심이 많음 🎓</option>
+                                <option value="unique">엉뚱하고 개성이 톡톡 튐 🤪</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Naming Theme / Style -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">선호하는 작명 스타일</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold bg-amber-50 border-amber-400 text-amber-900 flex items-center justify-center space-x-1">
+                                <input type="radio" name="style" value="cute" checked class="hidden" onchange="updateRadioStyles(this)">
+                                <span>🧸 귀여운/러블리</span>
+                            </label>
+                            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center space-x-1">
+                                <input type="radio" name="style" value="food" class="hidden" onchange="updateRadioStyles(this)">
+                                <span>🍞 음식/음료 이름</span>
+                            </label>
+                            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center space-x-1">
+                                <input type="radio" name="style" value="korean" class="hidden" onchange="updateRadioStyles(this)">
+                                <span>🇰🇷 정겨운 순우리말</span>
+                            </label>
+                            <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center space-x-1">
+                                <input type="radio" name="style" value="luxury" class="hidden" onchange="updateRadioStyles(this)">
+                                <span>✨ 세련된/고급진</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl font-bold text-sm sm:text-base shadow-lg shadow-amber-500/20 transition transform active:scale-[0.99] flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>맞춤 이름 5개 추천받기</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results List -->
+            <div id="resultsContainer" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center space-x-2">
+                        <span>🎉 우리 아이 맞춤 이름 추천 결과</span>
+                    </h3>
+                    <button onclick="generateNames(event)" class="text-xs text-amber-600 font-bold hover:underline flex items-center space-x-1">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>다시 추천받기</span>
+                    </button>
+                </div>
+
+                <div id="nameCardList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Name Cards Inserted Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: Bookmarks Tab -->
+        <div id="tabBookmarks" class="space-y-4 hidden">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg">❤️ 내가 찜한 이름 리스트</h3>
+                    <p class="text-xs text-slate-500">가장 마음에 드는 이름을 부르기 연습해보세요!</p>
+                </div>
+                <button onclick="clearBookmarks()" class="text-xs text-rose-500 hover:underline font-semibold">전체 삭제</button>
+            </div>
+
+            <div id="bookmarkList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Bookmarked Name Cards Inserted Here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Name Practice Modal -->
+    <div id="practiceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl transform scale-95 transition-transform" id="practiceModalContent">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h4 class="font-bold text-slate-900 text-base">🗣️ 이름 부르기 연습기</h4>
+                <button onclick="closePracticeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="text-center space-y-2 py-2">
+                <div class="text-3xl font-extrabold text-amber-600" id="modalTargetName">다솜이</div>
+                <p class="text-xs text-slate-500">다정하고 명확한 톤으로 아래 문장을 연습해보세요!</p>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-700">
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl font-medium">
+                    💬 "<span class="modalNamePlaceholder font-bold text-amber-700">다솜</span>아, 밥 먹자~!"
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl font-medium">
+                    💬 "<span class="modalNamePlaceholder font-bold text-amber-700">다솜</span>아, 산책 가자!"
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl font-medium">
+                    💬 "<span class="modalNamePlaceholder font-bold text-amber-700">다솜</span>아, 손!"
+                </div>
+            </div>
+
+            <div class="bg-slate-100 p-3 rounded-xl text-[11px] text-slate-600">
+                💡 <strong>Tip:</strong> 끝 음영을 살짝 올려서 부르면 반려동물이 긍정적인 신호로 인식합니다.
+            </div>
+
+            <button onclick="closePracticeModal()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-xl text-xs hover:bg-slate-700 transition">
+                확인 완료
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-amber-400"></i>
+        <span id="toastMessage">알림 메시지</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
+        🐾 반려동물학과 1학년 실습 앱 | 멍냥 작명소
+    </footer>
+
+    <script>
+        // Database of Name Suggestions categorized by theme & color & personality
+        const nameDatabase = {
+            cute: [
+                { name: "다솜", meaning: "사랑이라는 뜻의 순우리말. 애교 넘치는 아이에게 최고", phonetic: "명확한 모음 구성으로 인지도 높음" },
+                { name: "뽀뽀", meaning: "뽀뽀를 부르는 사랑스러운 반응을 이끌어내는 이름", phonetic: "파열음 'ㅃ'이 포함되어 반응 속도 빠름" },
+                { name: "모모", meaning: "복숭아처럼 말랑말랑하고 어리광 많은 아이에게 어울림", phonetic: "부드럽고 2음절 반복으로 외우기 쉬움" },
+                { name: "콩이", meaning: "동글동글하고 귀여운 외모를 가진 소형견/아기냥 맞춤", phonetic: "발음이 쉽고 다정함" },
+                { name: "아리", meaning: "화사하고 아리따운 아이라는 뜻", phonetic: "모음 중심 발음으로 청각 자극 용이" },
+                { name: "루루", meaning: "신나서 폴짝폴짝 뛰는 보석 같은 아이", phonetic: "반복음절로 부르기 간편함" },
+                { name: "쁘띠", meaning: "프랑스어로 작고 귀엽다는 의미", phonetic: "쌍시옷/쌍비읍 계열의 시원한 인지" }
+            ],
+            food: [
+                { name: "인절미", meaning: "말랑말랑 고소한 털 색상을 닮은 정겨운 이름", phonetic: "3음절이지만 억양이 명확함" },
+                { name: "초코", meaning: "달콤하고 부드러운 진갈색/검정 털을 가진 아이", phonetic: "치음 'ㅊ'이 강렬한 집중 선사" },
+                { name: "보리", meaning: "구수하고 건강하게 오래 살라는 바램을 담은 이름", phonetic: "파열음 'ㅂ'이 칭찬 시 효과적" },
+                { name: "모카", meaning: "따스한 모카라떼 색상처럼 포근한 성격", phonetic: "카 발음으로 명확한 호명 가능" },
+                { name: "만두", meaning: "동글동글 매력 만점 복스럽게 생김", phonetic: "단단한 느낌으로 전달력 높음" },
+                { name: "푸딩", meaning: "통통 튀는 성격과 말랑한 몸짓", phonetic: "귀여운 어감" },
+                { name: "치즈", meaning: "고소한 노란 빛깔 털과 친근함", phonetic: "치음 포함으로 집중력 향상" }
+            ],
+            korean: [
+                { name: "가람", meaning: "강처럼 맑고 넓은 마음을 지닌 아이", phonetic: "울림소리로 편안한 인지" },
+                { name: "나래", meaning: "날개처럼 자유롭고 씩씩하게 뛰놀라는 뜻", phonetic: "부드러운 모음 연쇄" },
+                { name: "도담", meaning: "탈 없이 건강하게 잘 자라라는 순우리말", phonetic: "파열음 'ㄷ'으로 훈련 시 인지 속도 우수" },
+                { name: "바람", meaning: "시원하고 자유로운 에너지를 지닌 호기심 대장", phonetic: "명확한 모음 발음" },
+                { name: "마루", meaning: "하늘이나 산의 정상처럼 우뚝 서라는 의미", phonetic: "부르기 쉽고 편안함" },
+                { name: "별이", meaning: "밤하늘 별처럼 반짝반짝 빛나는 눈망울", phonetic: "단정하고 맑은 소리" }
+            ],
+            luxury: [
+                { name: "루이", meaning: "왕족처럼 품격 있고 우아한 아이", phonetic: "모음 연쇄로 세련된 호명" },
+                { name: "벨라", meaning: "이탈리아어로 아름답다는 뜻", phonetic: "유음 포함으로 선율적 어감" },
+                { name: "샤넬", meaning: "고급스럽고 특별한 존재감을 지닌 명품 아이", phonetic: "마찰음 포함" },
+                { name: "레오", meaning: "사자처럼 용맹하고 당당하며 기품 있음", phonetic: "단호한 호명에 적합" },
+                { name: "코코", meaning: "세련되고 유행을 타지 않는 클래식 작명", phonetic: "반복 파열음으로 높은 인지도" },
+                { name: "로엘", meaning: "우아하고 고귀한 귀족적 느낌", phonetic: "부드러운 음성적 특성" }
+            ]
+        };
+
+        let currentRecommended = [];
+        let bookmarks = JSON.parse(localStorage.getItem('petNameBookmarks') || '[]');
+
+        window.onload = function() {
+            updateBookmarkCount();
+        };
+
+        // Radio Style Helper
+        function updateRadioStyles(radio) {
+            const name = radio.name;
+            document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                const label = input.closest('label');
+                if (input.checked) {
+                    label.className = "cursor-pointer border border-amber-400 rounded-xl p-2.5 text-center font-semibold bg-amber-50 text-amber-900 flex items-center justify-center space-x-1";
+                } else {
+                    label.className = "cursor-pointer border border-slate-200 rounded-xl p-2.5 text-center font-semibold text-slate-600 hover:bg-slate-50 flex items-center justify-center space-x-1";
+                }
+            });
+        }
+
+        // Generate Name Recommendation Engine
+        function generateNames(e) {
+            if (e) e.preventDefault();
+
+            const style = document.querySelector('input[name="style"]:checked').value;
+            const personality = document.getElementById('personality').value;
+            const coatColor = document.getElementById('coatColor').value;
+            
+            let candidatePool = [...nameDatabase[style]];
+
+            // Mix some entries from other pools for diversity
+            Object.keys(nameDatabase).forEach(k => {
+                if (k !== style) {
+                    candidatePool.push(nameDatabase[k][Math.floor(Math.random() * nameDatabase[k].length)]);
+                }
+            });
+
+            // Shuffle pool
+            candidatePool.sort(() => 0.5 - Math.random());
+
+            // Pick 5 unique names
+            currentRecommended = candidatePool.slice(0, 5);
+
+            renderNameCards();
+            document.getElementById('resultsContainer').classList.remove('hidden');
+            
+            // Scroll smoothly to results
+            document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+            showToast('맞춤 이름 5개가 추천되었습니다!');
+        }
+
+        // Render Name Cards
+        function renderNameCards() {
+            const container = document.getElementById('nameCardList');
+            container.innerHTML = '';
+
+            currentRecommended.forEach((item, index) => {
+                const isBookmarked = bookmarks.some(b => b.name === item.name);
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition space-y-3 relative flex flex-col justify-between";
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-6 h-6 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-xs font-bold">
+                                    ${index + 1}
+                                </span>
+                                <h4 class="text-xl font-extrabold text-slate-900">${item.name}</h4>
+                            </div>
+                            <button onclick="toggleBookmark('${item.name}', '${item.meaning}')" class="text-lg transition ${isBookmarked ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'}">
+                                <i class="${isBookmarked ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            💡 <strong>의미:</strong> ${item.meaning}
+                        </p>
+                        <p class="text-[11px] text-amber-800 bg-amber-50/60 p-2 rounded-lg">
+                            🎧 <strong>음성 특징:</strong> ${item.phonetic}
+                        </p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 flex justify-end">
+                        <button onclick="openPracticeModal('${item.name}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <span>부르기 연습</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Bookmark Toggle logic
+        function toggleBookmark(name, meaning) {
+            const index = bookmarks.findIndex(b => b.name === name);
+            if (index > -1) {
+                bookmarks.splice(index, 1);
+                showToast(`'${name}' 삭제되었습니다.`);
+            } else {
+                bookmarks.push({ name, meaning });
+                showToast(`'${name}' 찜목록에 추가되었습니다! ❤️`);
+            }
+
+            localStorage.setItem('petNameBookmarks', JSON.stringify(bookmarks));
+            updateBookmarkCount();
+            renderNameCards();
+            renderBookmarkCards();
+        }
+
+        function clearBookmarks() {
+            if (bookmarks.length === 0) return;
+            bookmarks = [];
+            localStorage.setItem('petNameBookmarks', JSON.stringify(bookmarks));
+            updateBookmarkCount();
+            renderBookmarkCards();
+            renderNameCards();
+            showToast('찜목록이 모두 삭제되었습니다.');
+        }
+
+        function updateBookmarkCount() {
+            document.getElementById('bookmarkCount').textContent = bookmarks.length;
+        }
+
+        function renderBookmarkCards() {
+            const container = document.getElementById('bookmarkList');
+            container.innerHTML = '';
+
+            if (bookmarks.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-400 space-y-2">
+                        <div class="text-4xl">💔</div>
+                        <p class="text-xs">아직 찜한 이름이 없습니다. 작명기에서 하트를 눌러보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            bookmarks.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3 flex flex-col justify-between";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-lg font-bold text-slate-900">${item.name}</h4>
+                            <button onclick="toggleBookmark('${item.name}', '${item.meaning}')" class="text-rose-500 text-base">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-600">${item.meaning}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 flex justify-end">
+                        <button onclick="openPracticeModal('${item.name}')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition">
+                            🗣️ 부르기 연습
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Tab Switcher
+        function switchTab(tab) {
+            const tabGen = document.getElementById('tabGenerator');
+            const tabBook = document.getElementById('tabBookmarks');
+            const navGen = document.getElementById('navGen');
+            const navBook = document.getElementById('navBook');
+
+            if (tab === 'generator') {
+                tabGen.classList.remove('hidden');
+                tabBook.classList.add('hidden');
+                navGen.className = "px-3 py-1.5 bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm";
+                navBook.className = "px-3 py-1.5 bg-amber-400/50 hover:bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition";
+            } else {
+                tabGen.classList.add('hidden');
+                tabBook.classList.remove('hidden');
+                navGen.className = "px-3 py-1.5 bg-amber-400/50 hover:bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition";
+                navBook.className = "px-3 py-1.5 bg-amber-600 rounded-xl text-xs sm:text-sm font-bold transition shadow-sm";
+                renderBookmarkCards();
+            }
+        }
+
+        // Practice Modal Controls
+        function openPracticeModal(name) {
+            document.getElementById('modalTargetName').textContent = name;
+            document.querySelectorAll('.modalNamePlaceholder').forEach(el => el.textContent = name);
+
+            const modal = document.getElementById('practiceModal');
+            const content = document.getElementById('practiceModalContent');
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closePracticeModal() {
+            const modal = document.getElementById('practiceModal');
+            const content = document.getElementById('practiceModalContent');
+
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
